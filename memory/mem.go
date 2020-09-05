@@ -56,7 +56,7 @@ func (s *Storage)GetAllData()[]string {
 }
 
 func (s *Storage)rangeGetCallback(k,v interface{})bool {
-	  val,ok := v.(string)
+	  val,ok := k.(string)
 	  if ok {
 		  s.list = append(s.list,val)
 	  }
