@@ -20,8 +20,15 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "Hello world!!!\n")
 }
 
+func GetAllData(w http.ResponseWriter, r *http.Request) {
+     list := memory.MemStorage.GetAllData()
+     by, _ := json.Marshal(&list)
+     w.Write(by)
+     w.Header().Set("Content-Type","application/json")
+     w.WriteHeader(http.StatusOK)
+}
 func CheckTestData(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.Method)
+	//log.Println(r.Method)
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
@@ -50,6 +57,7 @@ func CheckTestData(w http.ResponseWriter, r *http.Request) {
 func main() {
 	log.Println("Start https service...")
 	http.HandleFunc("/", Home)
+	http.HandleFunc("/data",GetAllData)
 	http.HandleFunc("/check", CheckTestData)
 	if err := http.ListenAndServeTLS(":9090", ServerCrt, ServerKey, nil); err != nil {
 		log.Fatal("Start https server error:", err.Error())
