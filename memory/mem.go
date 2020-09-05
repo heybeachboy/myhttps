@@ -13,6 +13,7 @@ func NewStorage()*Storage {
 }
 type Storage struct {
 	 total uint32
+	 list []string
 	 data *sync.Map
 }
 /**
@@ -35,7 +36,7 @@ func (s *Storage)Remove(key interface{}) {
  *@delete all data
  */
 func (s *Storage)Flush() {
-	s.data.Range(s.rangeCallback)
+	s.data.Range(s.rangeDelCallback)
 }
 /**
  *the key is exist
@@ -46,9 +47,26 @@ func (s *Storage)IsExist(key interface{})bool {
 }
 
 /**
+ *get all data
+ */
+func (s *Storage)GetAllData()[]string {
+	 s.list = []string{}
+	 s.data.Range(s.rangeGetCallback)
+	 return s.list
+}
+
+func (s *Storage)rangeGetCallback(k,v interface{})bool {
+	  val,ok := v.(string)
+	  if ok {
+		  s.list = append(s.list,val)
+	  }
+	  return true
+}
+
+/**
  *range syn map
  */
-func (s *Storage)rangeCallback(k,v interface{})bool {
+func (s *Storage)rangeDelCallback(k,v interface{})bool {
      s.data.Delete(k)
      return true
 }
