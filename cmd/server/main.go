@@ -2,12 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
+	"log"
 	"myhttps/core"
 	"myhttps/memory"
-
-	"io"
-	"log"
 	"net/http"
 )
 
@@ -21,28 +20,11 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "Hello world!!!\n")
 }
 
-type U struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
-	Tel  int    `json:"tel"`
-}
-
-func User(w http.ResponseWriter, r *http.Request) {
-	u := new(U)
-	u.Name = "LeLe"
-	u.Age = 20
-	u.Tel = 15086846070
-	data, _ := json.Marshal(u)
-	w.Write(data)
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-}
-
 func CheckTestData(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.Method)
 	if r.Method != http.MethodPost {
-		 w.WriteHeader(http.StatusMethodNotAllowed)
-		 return
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
 	}
 	var input []string
 
@@ -68,7 +50,6 @@ func CheckTestData(w http.ResponseWriter, r *http.Request) {
 func main() {
 	log.Println("Start https service...")
 	http.HandleFunc("/", Home)
-	http.HandleFunc("/user", User)
 	http.HandleFunc("/check", CheckTestData)
 	if err := http.ListenAndServeTLS(":9090", ServerCrt, ServerKey, nil); err != nil {
 		log.Fatal("Start https server error:", err.Error())
